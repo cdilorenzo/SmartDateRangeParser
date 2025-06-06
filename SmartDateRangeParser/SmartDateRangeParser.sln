@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartDateRangeParser", "..\src\SmartDateRangeParser\SmartDateRangeParser.csproj", "{947B3C4D-E929-4209-B498-37FB80AAF121}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartDateRangeParser.Tests", "..\tests\SmartDateRangeParser.Tests\SmartDateRangeParser.Tests.csproj", "{DC263DF2-9D9E-4B0E-BF97-CDCC9A24A8AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{947B3C4D-E929-4209-B498-37FB80AAF121}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{947B3C4D-E929-4209-B498-37FB80AAF121}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{947B3C4D-E929-4209-B498-37FB80AAF121}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{947B3C4D-E929-4209-B498-37FB80AAF121}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC263DF2-9D9E-4B0E-BF97-CDCC9A24A8AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC263DF2-9D9E-4B0E-BF97-CDCC9A24A8AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC263DF2-9D9E-4B0E-BF97-CDCC9A24A8AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC263DF2-9D9E-4B0E-BF97-CDCC9A24A8AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
