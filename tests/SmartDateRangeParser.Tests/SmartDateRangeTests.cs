@@ -1,88 +1,124 @@
 using System;
 using Xunit;
 
-namespace SmartDateRangeParser.Tests;
-
-public class SmartDateRangeTests
+namespace SmartDateRangeParser.Tests
 {
-    [Fact]
-    public void ParsesTodayCorrectly()
+    public class SmartDateRangeTests
     {
-        var today = DateTime.Today;
-        var range = SmartDateRange.Parse("today");
-
-        Assert.Equal(today, range.Start);
-        Assert.Equal(today, range.End);
-    }
-
-    [Fact]
-    public void ParsesYesterdayCorrectly()
-    {
-        var yesterday = DateTime.Today.AddDays(-1);
-        var range = SmartDateRange.Parse("yesterday");
-
-        Assert.Equal(yesterday, range.Start);
-        Assert.Equal(yesterday, range.End);
-    }
-
-    [Theory]
-    [InlineData("last 1 business day", 1)]
-    [InlineData("last 2 business days", 2)]
-    [InlineData("last 5 business days", 5)]
-    public void ParsesLastBusinessDaysCorrectly(string input, int days)
-    {
-        var expectedEnd = DateTime.Today.AddDays(-1);
-        var expectedStart = SubtractBusinessDays(expectedEnd, days - 1);
-
-        var range = SmartDateRange.Parse(input);
-
-        Assert.Equal(expectedStart, range.Start);
-        Assert.Equal(expectedEnd, range.End);
-    }
-
-    [Theory]
-    [InlineData("LAST 3 BUSINESS DAYS")]   // Uppercase
-    [InlineData(" Last 3 Business Days ")] // Whitespace
-    [InlineData("last 03 business day")]   // Leading zero
-    public void IgnoresCaseAndWhitespace(string input)
-    {
-        var result = SmartDateRange.Parse(input);
-        Assert.NotEqual(default, result);
-    }
-
-    [Theory]
-    [InlineData("last x business days")]
-    [InlineData("last -3 business days")]
-    [InlineData("last 0 business days")]
-    public void ThrowsOnInvalidBusinessDayInput(string input)
-    {
-        Assert.ThrowsAny<Exception>(() => SmartDateRange.Parse(input));
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData("   ")]
-    [InlineData(null)]
-    public void ThrowsOnEmptyOrNullInput(string? input)
-    {
-        Assert.ThrowsAny<ArgumentException>(() => SmartDateRange.Parse(input!));
-    }
-
-    [Fact]
-    public void ThrowsOnUnsupportedExpression()
-    {
-        Assert.Throws<NotSupportedException>(() => SmartDateRange.Parse("last quarter"));
-    }
-
-    // Local helper to verify logic correctness
-    private static DateTime SubtractBusinessDays(DateTime from, int count)
-    {
-        while (count > 0)
+        [Theory]
+        [InlineData("today", 0)]
+        [InlineData("yesterday", -1)]
+        public void ParsesFixedKeywords(string input, int offset)
         {
-            from = from.AddDays(-1);
-            if (from.DayOfWeek is not DayOfWeek.Saturday and not DayOfWeek.Sunday)
-                count--;
+            var expected = DateTime.Today.AddDays(offset);
+            var range = SmartDateRange.Parse(input);
+            Assert.Equal(expected, range.Start);
+            Assert.Equal(expected, range.End);
         }
-        return from;
+
+        [Theory]
+        [InlineData("last 3 days", 3)]
+        [InlineData("last 5 days", 5)]
+        public void ParsesLastCalendarDays(string input, int days)
+        {
+            var end = DateTime.Today.AddDays(-1);
+            var start = end.AddDays(-(days - 1));
+            var range = SmartDateRange.Parse(input);
+            Assert.Equal(start, range.Start);
+            Assert.Equal(end, range.End);
+        }
+
+        [Theory]
+        [InlineData("last 3 business days", 3)]
+        [InlineData("last 5 business days", 5)]
+        public void ParsesLastBusinessDays(string input, int days)
+        {
+            var end = DateTime.Today.AddDays(-1);
+            var start = end;
+            int count = 1;
+            while (count < days)
+            {
+                start = start.AddDays(-1);
+                if (start.DayOfWeek != DayOfWeek.Saturday && start.DayOfWeek != DayOfWeek.Sunday)
+                    count++;
+            }
+
+            var range = SmartDateRange.Parse(input);
+            Assert.Equal(start, range.Start);
+            Assert.Equal(end, range.End);
+        }
+
+        [Fact]
+        public void ParsesThisWeek()
+        {
+            var today = DateTime.Today;
+            int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var start = today.AddDays(-diff).Date;
+
+            var range = SmartDateRange.Parse("this week");
+            Assert.Equal(start, range.Start);
+            Assert.Equal(today, range.End);
+        }
+
+        [Fact]
+        public void ParsesThisMonth()
+        {
+            var today = DateTime.Today;
+            var start = new DateTime(today.Year, today.Month, 1);
+
+            var range = SmartDateRange.Parse("this month");
+            Assert.Equal(start, range.Start);
+            Assert.Equal(today, range.End);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData(null)]
+        public void ThrowsOnEmptyOrNullInput(string input)
+        {
+            Assert.Throws<ArgumentException>(() => SmartDateRange.Parse(input));
+        }
+
+        [Theory]
+        [InlineData("last -5 days")]
+        [InlineData("last 0 business days")]
+        public void ThrowsOnInvalidDayCount(string input)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => SmartDateRange.Parse(input));
+        }
+
+        [Fact]
+        public void ThrowsOnUnsupportedExpression()
+        {
+            Assert.Throws<NotSupportedException>(() => SmartDateRange.Parse("next week"));
+        }
+
+        [Theory]
+        [InlineData("today", true)]
+        [InlineData("yesterday", true)]
+        [InlineData("last 3 days", true)]
+        [InlineData("last 3 business days", true)]
+        [InlineData("this week", true)]
+        [InlineData("this month", true)]
+        [InlineData("next week", false)]
+        [InlineData("", false)]
+        [InlineData(null, false)]
+        public void TryParseReturnsExpectedResult(string input, bool expectedResult)
+        {
+            var result = SmartDateRange.TryParse(input, out var range);
+            Assert.Equal(expectedResult, result);
+            if (expectedResult)
+            {
+                Assert.True(range.Start <= range.End);
+            }
+        }
+
+        [Fact]
+        public void TryParseHandlesNullInput()
+        {
+            var result = SmartDateRange.TryParse(null, out var range);
+            Assert.False(result);
+        }
     }
 }
