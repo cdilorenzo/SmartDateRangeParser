@@ -1,17 +1,26 @@
-name: Run C# Tests
+name: Run .NET 9 Tests
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
-      - name: Restore dependencies
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install .NET 9 Preview SDK
+        run: |
+          wget https://dot.net/v1/dotnet-install.sh
+          chmod +x dotnet-install.sh
+          ./dotnet-install.sh --channel 9.0
+          echo "DOTNET_ROOT=$HOME/.dotnet" >> $GITHUB_ENV
+          echo "$HOME/.dotnet:$PATH" >> $GITHUB_PATH
+
+      - name: Restore
         run: dotnet restore tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj
-      - name: Run tests
+
+      - name: Run Tests
         run: dotnet test tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj
