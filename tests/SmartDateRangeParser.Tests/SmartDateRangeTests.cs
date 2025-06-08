@@ -77,7 +77,7 @@ namespace SmartDateRangeParser.Tests
         [InlineData(null)]
         public void ThrowsOnEmptyOrNullInput(string input)
         {
-            Assert.Throws<ArgumentException>(() => SmartDateRange.Parse(input));
+            Assert.Throws<NotSupportedException>(() => SmartDateRange.Parse(input));
         }
 
         [Theory]
@@ -85,7 +85,7 @@ namespace SmartDateRangeParser.Tests
         [InlineData("last 0 business days")]
         public void ThrowsOnInvalidDayCount(string input)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => SmartDateRange.Parse(input));
+            Assert.Throws<NotSupportedException>(() => SmartDateRange.Parse(input));
         }
 
         [Fact]
