@@ -12,6 +12,6 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj
       - name: Run tests
-        run: dotnet test
+        run: dotnet test tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj
