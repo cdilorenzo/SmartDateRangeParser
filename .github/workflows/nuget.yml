@@ -1,30 +1,33 @@
 name: Publish NuGet Package
 
 on:
-  workflow_dispatch:  # manually trigger from GitHub
   push:
     tags:
-      - 'v*'  # only run on version tags like v1.0.0
+      - 'v*'
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
+      - name: Install .NET 9 SDK
+        run: |
+          wget https://dot.net/v1/dotnet-install.sh
+          chmod +x dotnet-install.sh
+          ./dotnet-install.sh --channel 9.0
+          echo "DOTNET_ROOT=$HOME/.dotnet" >> $GITHUB_ENV
+          echo "$HOME/.dotnet:$PATH" >> $GITHUB_PATH
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore SmartDateRangeParser/SmartDateRangeParser.sln
 
       - name: Build
-        run: dotnet build --configuration Release
+        run: dotnet build SmartDateRangeParser/SmartDateRangeParser.sln --configuration Release
 
       - name: Pack
-        run: dotnet pack --configuration Release -o out
+        run: dotnet pack SmartDateRangeParser/src/SmartDateRangeParser/SmartDateRangeParser.csproj --configuration Release -o out
 
       - name: Push to NuGet
         run: dotnet nuget push out/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
