@@ -1,0 +1,30 @@
+name: Publish NuGet Package
+
+on:
+  workflow_dispatch:  # manually trigger from GitHub
+  push:
+    tags:
+      - 'v*'  # only run on version tags like v1.0.0
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Pack
+        run: dotnet pack --configuration Release -o out
+
+      - name: Push to NuGet
+        run: dotnet nuget push out/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
