@@ -29,7 +29,7 @@ jobs:
         run: dotnet build SmartDateRangeParser/SmartDateRangeParser.sln --configuration Release
 
       - name: Pack
-        run: dotnet pack SmartDateRangeParser/src/SmartDateRangeParser/SmartDateRangeParser.csproj --configuration Release -o out
+        run: dotnet pack src/SmartDateRangeParser/SmartDateRangeParser.csproj --configuration Release -o out
 
       - name: Push to NuGet
         run: dotnet nuget push out/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
