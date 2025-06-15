@@ -9,25 +9,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: 🛎️ Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup .NET 8 SDK
+      - name: 🧰 Setup .NET 8 SDK
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
 
-      - name: Restore all projects
+      - name: 📦 Restore dependencies
         run: dotnet restore SmartDateRangeParser/SmartDateRangeParser.sln
 
-      - name: Build library for .NET Standard 2.0
+      - name: 🧪 Build library for .NET Standard 2.0
         run: dotnet build src/SmartDateRangeParser/SmartDateRangeParser.csproj --framework netstandard2.0 --configuration Release
 
-      - name: Clean test project
+      - name: 🧼 Clean test project
         run: dotnet clean tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj
 
-      - name: Build test project for .NET 8.0
-        run: dotnet build tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj --configuration Release
+      - name: 🛠️ Build test project for .NET 8.0
+        run: dotnet build tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj --configuration Debug
 
-      - name: Run unit tests (on .NET 8.0)
-        run: dotnet test tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj --no-build --verbosity normal
+      - name: 🚀 Run unit tests
+        run: dotnet test tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj --verbosity normal
