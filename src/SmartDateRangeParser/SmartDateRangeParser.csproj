@@ -4,12 +4,10 @@
     <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Version>1.0.2</Version> <!-- Change this to the version you want -->
-<PackageReadmeFile>README.md</
+<PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 <ItemGroup>
-        ...
         <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
-        ...
     </ItemGroup>
   <!-- Include other necessary configurations -->
 
