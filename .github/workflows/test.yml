@@ -21,7 +21,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore SmartDateRangeParser/SmartDateRangeParser.sln
 
       - name: Run tests for ${{ matrix.framework }}
         run: dotnet test tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj --framework ${{ matrix.framework }}
