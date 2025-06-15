@@ -20,10 +20,10 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore dependencies
-        run: dotnet restore SmartDateRangeParser.sln
+        run: dotnet restore SmartDateRangeParser/SmartDateRangeParser.sln
 
       - name: Build for Release
-        run: dotnet build SmartDateRangeParser.sln --configuration Release
+        run: dotnet build SmartDateRangeParser/SmartDateRangeParser.sln --configuration Release
 
       - name: Pack NuGet Package
         run: dotnet pack src/SmartDateRangeParser/SmartDateRangeParser.csproj --configuration Release -o out
