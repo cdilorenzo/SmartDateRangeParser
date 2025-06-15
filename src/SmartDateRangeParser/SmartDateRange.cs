@@ -1,112 +1,59 @@
 using System;
-using System.Globalization;
+using System.Text.RegularExpressions;
 
-namespace SmartDateRangeParser;
-
-public readonly struct SmartDateRange(DateTime start, DateTime end)
+namespace SmartDateRangeParser
 {
-    public DateTime Start { get; } = start;
-    public DateTime End { get; } = end;
-
-    public static SmartDateRange Parse(string input, string culture = "en")
+    public static class SmartDateRange
     {
-        if (!TryParse(input, out var range, culture))
-            throw new NotSupportedException($"Unsupported date range expression: '{input}'");
-
-        return range;
-    }
-
-    public static bool TryParse(string input, out SmartDateRange range, string culture = "en")
-    {
-        range = default;
-
-        if (string.IsNullOrWhiteSpace(input))
-            return false;
-
-        input = input.Trim().ToLowerInvariant();
-
-        try
+        public static (DateTime? Start, DateTime? End) Parse(string text)
         {
-            range = culture switch
+            if (string.IsNullOrWhiteSpace(text))
+                return (null, null);
+
+            text = text.Trim().ToLowerInvariant();
+
+            if (text == "today")
             {
-                "en" => ParseEnglish(input),
-                // Add future culture-specific parsers here
-                _ => throw new NotSupportedException($"Culture '{culture}' is not supported.")
-            };
-            return true;
+                var today = DateTime.Today;
+                return (today, today);
+            }
+
+            if (text == "yesterday")
+            {
+                var yesterday = DateTime.Today.AddDays(-1);
+                return (yesterday, yesterday);
+            }
+
+            if (text == "last week")
+            {
+                var end = DateTime.Today.AddDays(-1);
+                var start = end.AddDays(-6);
+                return (start, end);
+            }
+
+            if (text == "last month")
+            {
+                var end = DateTime.Today.AddDays(-1);
+                var start = end.AddMonths(-1).AddDays(1);
+                return (start, end);
+            }
+
+            // "from 2024-01-01 to 2024-01-31"
+            if (text.IndexOf("from", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                text.IndexOf("to", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                var match = Regex.Match(text, @"from\s+([\d\-\/]+)\s+to\s+([\d\-\/]+)");
+                if (match.Success)
+                {
+                    if (DateTime.TryParse(match.Groups[1].Value, out var start) &&
+                        DateTime.TryParse(match.Groups[2].Value, out var end))
+                    {
+                        return (start, end);
+                    }
+                }
+            }
+
+            return (null, null);
         }
-        catch
-        {
-            return false;
-        }
-    }
-
-    private static SmartDateRange ParseEnglish(string input)
-    {
-        return input switch
-        {
-            "today" => new(DateTime.Today, DateTime.Today),
-            "yesterday" => new(DateTime.Today.AddDays(-1), DateTime.Today.AddDays(-1)),
-            "this week" => new(GetStartOfWeek(DateTime.Today), DateTime.Today),
-            "this month" => new(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1), DateTime.Today),
-
-            _ when input.StartsWith("last ") && input.Contains("business day", StringComparison.OrdinalIgnoreCase)
-                => ParseLastBusinessDays(input),
-
-            _ when input.StartsWith("last ") && input.Contains("day", StringComparison.OrdinalIgnoreCase)
-                => ParseLastCalendarDays(input),
-
-            _ => throw new NotSupportedException($"Unsupported expression: '{input}'")
-        };
-    }
-
-    private static SmartDateRange ParseLastBusinessDays(string input)
-    {
-        int days = ExtractNumber(input);
-        if (days <= 0)
-            throw new ArgumentOutOfRangeException(nameof(days), "Number of business days must be greater than 0.");
-
-        var end = DateTime.Today.AddDays(-1);
-        var start = SubtractBusinessDays(end, days - 1);
-        return new(start, end);
-    }
-
-    private static SmartDateRange ParseLastCalendarDays(string input)
-    {
-        int days = ExtractNumber(input);
-        if (days <= 0)
-            throw new ArgumentOutOfRangeException(nameof(days), "Number of days must be greater than 0.");
-
-        var end = DateTime.Today.AddDays(-1);
-        var start = end.AddDays(-(days - 1));
-        return new(start, end);
-    }
-
-    private static int ExtractNumber(string input)
-    {
-        foreach (var token in input.Split(' '))
-        {
-            if (int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out int number))
-                return number;
-        }
-
-        throw new FormatException("Could not find a valid number in input.");
-    }
-
-    private static DateTime SubtractBusinessDays(DateTime from, int count)
-    {
-        while (count > 0)
-        {
-            from = from.AddDays(-1);
-            if (from.DayOfWeek is not DayOfWeek.Saturday and not DayOfWeek.Sunday)
-                count--;
-        }
-        return from;
-    }
-
-    private static DateTime GetStartOfWeek(DateTime date)
-    {
-        int diff = (7 + (date.DayOfWeek - DayOfWeek.Monday)) % 7;
-        return date.AddDays(-diff).Date;
     }
 }
