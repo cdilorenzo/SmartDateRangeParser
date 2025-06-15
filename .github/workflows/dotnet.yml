@@ -1,8 +1,11 @@
 - name: Restore
   run: dotnet restore SmartDateRangeParser/SmartDateRangeParser.sln
 
-- name: Build
+- name: Build library for .NET Standard 2.0
+  run: dotnet build SmartDateRangeParser/src/SmartDateRangeParser/SmartDateRangeParser.csproj --framework netstandard2.0 --configuration Release
+
+- name: Build everything for .NET 8
   run: dotnet build SmartDateRangeParser/SmartDateRangeParser.sln --configuration Release
 
-- name: Test
-  run: dotnet test SmartDateRangeParser/SmartDateRangeParser.sln --no-build --verbosity normal
+- name: Test (under .NET 8)
+  run: dotnet test SmartDateRangeParser/SmartDateRangeParser.sln --framework net8.0 --no-build --verbosity normal
