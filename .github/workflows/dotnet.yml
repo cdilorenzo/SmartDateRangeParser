@@ -18,13 +18,13 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore all projects
-        run: dotnet restore SmartDateRangeParser/SmartDateRangeParser.sln
+        run: dotnet restore SmartDateRangeParser.sln
 
-      - name: Build SmartDateRangeParser library for .NET Standard 2.0
-        run: dotnet build SmartDateRangeParser/src/SmartDateRangeParser/SmartDateRangeParser.csproj --framework netstandard2.0 --configuration Release
+      - name: Build library for .NET Standard 2.0
+        run: dotnet build src/SmartDateRangeParser/SmartDateRangeParser.csproj --framework netstandard2.0 --configuration Release
 
-      - name: Build entire solution for .NET 8.0
-        run: dotnet build SmartDateRangeParser/SmartDateRangeParser.sln --configuration Release
+      - name: Build full solution (for .NET 8.0)
+        run: dotnet build SmartDateRangeParser.sln --configuration Release
 
-      - name: Run unit tests under .NET 8.0
-        run: dotnet test SmartDateRangeParser/SmartDateRangeParser.sln --framework net8.0 --no-build --verbosity normal
+      - name: Run unit tests on .NET 8.0
+        run: dotnet test tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj --framework net8.0 --no-build --verbosity normal
