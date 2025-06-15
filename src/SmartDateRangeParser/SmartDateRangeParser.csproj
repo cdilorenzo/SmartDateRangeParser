@@ -3,12 +3,24 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-    <Version>1.0.3</Version> <!-- Change this to the version you want -->
-<PackageReadmeFile>README.md</PackageReadmeFile>
+    <Version>1.0.4</Version>
+
+    <!-- NuGet metadata -->
+    <PackageId>SmartDateRangeParser</PackageId>
+    <Authors>Claudio Di Lorenzo</Authors>
+    <Description>.NET library to parse natural language date range expressions like 'today', 'last 3 days', 'this month'.</Description>
+    <PackageTags>date;range;parser;natural language;calendar;smart;dotnet;csharp</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/cdilorenzo/SmartDateRangeParser</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/cdilorenzo/SmartDateRangeParser</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
-<ItemGroup>
-        <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
-    </ItemGroup>
-  <!-- Include other necessary configurations -->
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>
