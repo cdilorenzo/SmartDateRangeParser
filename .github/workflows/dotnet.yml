@@ -18,7 +18,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore all projects
-        run: dotnet restore SmartDateRangeParser.sln
+        run: dotnet restore SmartDateRangeParser/SmartDateRangeParser.sln
 
       - name: ✅ Build library for .NET Standard 2.0
         run: dotnet build src/SmartDateRangeParser/SmartDateRangeParser.csproj --framework netstandard2.0 --configuration Release
