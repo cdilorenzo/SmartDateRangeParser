@@ -1,4 +1,4 @@
-name: Run .NET 9 Tests
+name: Run Tests on .NET 8 and .NET Standard 2.0
 
 on:
   push:
@@ -7,20 +7,21 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        framework: [netstandard2.0, net8.0]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install .NET 9 Preview SDK
-        run: |
-          wget https://dot.net/v1/dotnet-install.sh
-          chmod +x dotnet-install.sh
-          ./dotnet-install.sh --channel 9.0
-          echo "DOTNET_ROOT=$HOME/.dotnet" >> $GITHUB_ENV
-          echo "$HOME/.dotnet:$PATH" >> $GITHUB_PATH
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
 
-      - name: Restore
-        run: dotnet restore tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj
+      - name: Restore dependencies
+        run: dotnet restore
 
-      - name: Run Tests
-        run: dotnet test tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj
+      - name: Run tests for ${{ matrix.framework }}
+        run: dotnet test tests/SmartDateRangeParser.Tests/SmartDateRangeParser.Tests.csproj --framework ${{ matrix.framework }}
