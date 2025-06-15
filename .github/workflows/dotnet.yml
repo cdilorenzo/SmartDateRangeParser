@@ -21,7 +21,7 @@ jobs:
         run: dotnet restore SmartDateRangeParser/SmartDateRangeParser.sln
 
       - name: ✅ Build only the library for .NET Standard 2.0
-        run: dotnet build src/SmartDateRangeParser/SmartDateRangeParsesrc/SmartDateRangeParser/SmartDateRangeParser.csprojr.csproj --framework netstandard2.0 --configuration Release
+        run: dotnet build src/SmartDateRangeParser/SmartDateRangeParser.csprojr.csproj --framework netstandard2.0 --configuration Release
 
       - name: ✅ Build solution for .NET 8.0
         run: dotnet build SmartDateRangeParser/SmartDateRangeParser.sln --configuration Release
