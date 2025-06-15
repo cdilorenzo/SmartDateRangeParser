@@ -4,8 +4,7 @@
 - name: Build library for .NET Standard 2.0
   run: dotnet build SmartDateRangeParser/src/SmartDateRangeParser/SmartDateRangeParser.csproj --framework netstandard2.0 --configuration Release
 
-- name: Build everything for .NET 8
-  run: dotnet build SmartDateRangeParser/SmartDateRangeParser.sln --configuration Release
-
-- name: Test (under .NET 8)
-  run: dotnet test SmartDateRangeParser/SmartDateRangeParser.sln --framework net8.0 --no-build --verbosity normal
+- name: Build and test for .NET 8
+  run: |
+    dotnet build SmartDateRangeParser/SmartDateRangeParser.sln --configuration Release
+    dotnet test SmartDateRangeParser/SmartDateRangeParser.sln --framework net8.0 --no-build --verbosity normal
